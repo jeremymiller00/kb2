@@ -100,7 +100,8 @@ def ask(question: str, db: Database, top_k: int = 8,
     }
 
 
-def topic_briefing(topic: str, db: Database, top_k: int = 15) -> dict:
+def topic_briefing(topic: str, db: Database, top_k: int = 15,
+                   use_full_content: bool = False) -> dict:
     """Generate a structured briefing on a topic from the personal corpus.
 
     Use case: "Get me smart on [topic] for a meeting tomorrow."
@@ -117,10 +118,15 @@ def topic_briefing(topic: str, db: Database, top_k: int = 15) -> dict:
         }
 
     # Build context
+    def _doc_text(doc):
+        if use_full_content:
+            return _load_full_content(doc)
+        return doc.get("summary", "")
+
     summaries = "\n---\n".join(
         f"[{i}] {doc['title']}\n"
         f"Keywords: {', '.join(doc.get('keywords', [])[:5])}\n"
-        f"Summary: {doc.get('summary', '')}"
+        f"Content: {_doc_text(doc)}"
         for i, doc in enumerate(results, 1)
     )
 

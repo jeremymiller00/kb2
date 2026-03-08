@@ -153,13 +153,14 @@ def ask_page(request: Request, question: str = "", full_content: str = ""):
 
 
 @router.get("/topic", response_class=HTMLResponse)
-def topic_page(request: Request, topic: str = ""):
+def topic_page(request: Request, topic: str = "", full_content: str = ""):
     ctx = _base_context(request, "topic")
     ctx["briefing"] = None
+    ctx["full_content"] = bool(full_content)
 
     if topic:
         db = Database()
-        ctx["briefing"] = topic_briefing(topic, db)
+        ctx["briefing"] = topic_briefing(topic, db, use_full_content=bool(full_content))
 
     return templates.TemplateResponse("topic.html", ctx)
 
