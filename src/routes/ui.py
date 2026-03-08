@@ -138,15 +138,16 @@ def document_page(request: Request, doc_id: int):
 
 
 @router.get("/ask", response_class=HTMLResponse)
-def ask_page(request: Request, question: str = ""):
+def ask_page(request: Request, question: str = "", full_content: str = ""):
     db = Database()
     ctx = _base_context(request, "ask")
     ctx["question"] = question
+    ctx["full_content"] = bool(full_content)
     ctx["answer"] = None
     ctx["revisit"] = revisit_suggestions(db, recent_days=14, limit=5)
 
     if question:
-        ctx["answer"] = research_ask(question, db)
+        ctx["answer"] = research_ask(question, db, use_full_content=bool(full_content))
 
     return templates.TemplateResponse("ask.html", ctx)
 

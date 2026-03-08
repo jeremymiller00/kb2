@@ -7,5 +7,6 @@
 - ideate with claude on advanced features
 - try out all of the features
 - test suite
+- add token counts and cost to activities
 
 # Done

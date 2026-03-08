@@ -9,6 +9,10 @@
             <input type="text" name="question" value="{{ question }}" placeholder="What do you know about..." autofocus>
             <button type="submit" class="btn">ask</button>
         </div>
+        <label style="display: inline-flex; align-items: center; gap: 0.4rem; margin-top: 0.5rem; font-size: 0.85rem; opacity: 0.8; cursor: pointer;">
+            <input type="checkbox" name="full_content" value="1" {% if full_content %}checked{% endif %}>
+            use full content (slower, more detailed)
+        </label>
     </form>
 </div>
 
