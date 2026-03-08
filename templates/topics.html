@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}kb - topics{% endblock %}
+{% block content %}
+
+<div class="section-header">all topics</div>
+<div class="keyword-cloud">
+    {% for kw in keywords %}
+    <a href="/search?query={{ kw.keyword }}" class="keyword-tag">{{ kw.keyword }} ({{ kw.count }})</a>
+    {% endfor %}
+</div>
+
+{% if not keywords %}
+<div class="message">No topics yet. Add some content first.</div>
+{% endif %}
+
+{% endblock %}

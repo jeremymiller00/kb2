@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}kb{% endblock %}</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>kb</h1>
+            <div class="stats">{{ doc_count }} documents indexed</div>
+        </header>
+        <nav>
+            <a href="/" class="{% if active == 'home' %}active{% endif %}">home</a>
+            <a href="/search" class="{% if active == 'search' %}active{% endif %}">search</a>
+            <a href="/ask" class="{% if active == 'ask' %}active{% endif %}">ask</a>
+            <a href="/topic" class="{% if active == 'topic' %}active{% endif %}">brief me</a>
+            <a href="/add" class="{% if active == 'add' %}active{% endif %}">add</a>
+            <a href="/topics" class="{% if active == 'topics' %}active{% endif %}">topics</a>
+        </nav>
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

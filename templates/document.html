@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}kb - {{ doc.title }}{% endblock %}
+{% block content %}
+
+<div class="doc-detail">
+    <h2>{{ doc.title }}</h2>
+    <div class="meta">
+        {{ doc.content_type }} &middot; {{ doc.date }}
+    </div>
+    <div class="source-link">
+        <a href="{{ doc.url }}" target="_blank">{{ doc.url }}</a>
+    </div>
+    <div class="summary-text">{{ doc.summary }}</div>
+    <div class="keywords">
+        {% for kw in doc.keywords %}
+        <a href="/search?query={{ kw }}" class="keyword-tag">{{ kw }}</a>
+        {% endfor %}
+    </div>
+</div>
+
+{% if similar %}
+<div class="section-header" style="margin-top: 2rem;">similar documents</div>
+<div class="doc-list">
+    {% for s in similar %}
+    <div class="doc-card">
+        <span class="similarity">{{ "%.1f"|format(s.similarity * 100) }}%</span>
+        <div class="title"><a href="/doc/{{ s.id }}">{{ s.title }}</a></div>
+        <div class="meta">{{ s.content_type }} &middot; {{ s.date }}</div>
+        <div class="summary">{{ s.summary[:150] }}{% if s.summary|length > 150 %}...{% endif %}</div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% endblock %}

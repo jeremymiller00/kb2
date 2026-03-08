@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}kb - add{% endblock %}
+{% block content %}
+
+<div class="process-form">
+    <h2>+ add url</h2>
+    <form action="/add" method="post">
+        <div class="input-row">
+            <input type="url" name="url" placeholder="https://..." required autofocus>
+            <button type="submit" class="btn">process</button>
+        </div>
+    </form>
+</div>
+
+{% if result %}
+<div class="message success">Processed: {{ result.title }}</div>
+<div class="doc-card">
+    <div class="title"><a href="/doc/{{ result.doc_id }}">{{ result.title }}</a></div>
+    <div class="meta">{{ result.content_type }}</div>
+    <div class="summary">{{ result.summary }}</div>
+    <div class="keywords">
+        {% for kw in result.keywords %}
+        <span class="keyword-tag">{{ kw }}</span>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% if error %}
+<div class="message error">{{ error }}</div>
+{% endif %}
+
+{% endblock %}

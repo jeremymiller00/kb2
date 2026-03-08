@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}kb - {{ briefing.topic }}{% endblock %}
+{% block content %}
+
+<div class="process-form">
+    <h2>@ topic briefing</h2>
+    <form action="/topic" method="get">
+        <div class="input-row">
+            <input type="text" name="topic" value="{{ briefing.topic if briefing else '' }}" placeholder="Get me smart on..." autofocus>
+            <button type="submit" class="btn">brief me</button>
+        </div>
+    </form>
+</div>
+
+{% if briefing %}
+<div class="topic-briefing">
+    <div class="section-header">{{ briefing.topic }} <span class="section-meta">{{ briefing.source_count }} sources</span></div>
+
+    {% if briefing.overview %}
+    <div class="briefing-overview">{{ briefing.overview }}</div>
+    {% endif %}
+
+    {% if briefing.key_points %}
+    <div class="briefing-section">
+        <h3>Key Points</h3>
+        {% for kp in briefing.key_points %}
+        <div class="key-point">
+            {% if kp is mapping %}
+            <span class="point-text">{{ kp.point }}</span>
+            {% if kp.source_nums %}
+            <span class="point-sources">{{ kp.source_nums }}</span>
+            {% endif %}
+            {% else %}
+            <span class="point-text">{{ kp }}</span>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if briefing.talking_points %}
+    <div class="briefing-section">
+        <h3>Talking Points</h3>
+        {% for tp in briefing.talking_points %}
+        <div class="talking-point">{{ tp }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if briefing.perspectives %}
+    <div class="briefing-section">
+        <h3>Perspectives</h3>
+        <div class="perspectives-text">{{ briefing.perspectives }}</div>
+    </div>
+    {% endif %}
+
+    {% if briefing.gaps %}
+    <div class="briefing-section">
+        <h3>Knowledge Gaps</h3>
+        {% for gap in briefing.gaps %}
+        <div class="gap-item">{{ gap }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if briefing.sources %}
+    <div class="briefing-section">
+        <h3>Sources</h3>
+        <div class="sources-list">
+            {% for src in briefing.sources %}
+            <div class="source-item">
+                <span class="source-num">[{{ loop.index }}]</span>
+                <a href="/doc/{{ src.id }}" class="source-title">{{ src.title }}</a>
+                <span class="similarity">{{ "%.0f"|format(src.similarity * 100) }}%</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endif %}
+
+{% endblock %}

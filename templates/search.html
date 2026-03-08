@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}kb - search{% endblock %}
+{% block content %}
+
+<form class="search-bar" action="/search" method="get">
+    <input type="text" name="query" value="{{ query }}" placeholder="search your knowledge base..." autofocus>
+    <button type="submit">text</button>
+    <button type="submit" name="mode" value="semantic">semantic</button>
+</form>
+
+{% if query %}
+<div class="result-info">{{ total }} results for "{{ query }}"{% if mode == 'semantic' %} (semantic){% endif %}</div>
+{% endif %}
+
+<div class="doc-list">
+    {% for doc in documents %}
+    <div class="doc-card">
+        {% if doc.similarity %}<span class="similarity">{{ "%.1f"|format(doc.similarity * 100) }}%</span>{% endif %}
+        <div class="title"><a href="/doc/{{ doc.id }}">{{ doc.title }}</a></div>
+        <div class="meta">{{ doc.content_type }} &middot; {{ doc.date }}</div>
+        <div class="summary">{{ doc.summary[:200] }}{% if doc.summary|length > 200 %}...{% endif %}</div>
+        <div class="keywords">
+            {% for kw in doc.keywords[:5] %}
+            <span class="keyword-tag">{{ kw }}</span>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% if query and not documents %}
+<div class="message">No results found for "{{ query }}"</div>
+{% endif %}
+
+{% endblock %}

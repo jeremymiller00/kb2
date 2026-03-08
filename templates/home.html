@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}kb - dashboard{% endblock %}
+{% block content %}
+
+<form class="search-bar" action="/search" method="get">
+    <input type="text" name="query" placeholder="search your knowledge base..." autofocus>
+    <button type="submit">text</button>
+    <button type="submit" name="mode" value="semantic">semantic</button>
+</form>
+
+{% if trends %}
+<div class="section-header">emerging topics</div>
+<div class="trends-list">
+    {% for t in trends %}
+    <a href="/search?query={{ t.keyword }}" class="trend-item">
+        <span class="trend-keyword">{{ t.keyword }}</span>
+        <span class="trend-badge {% if t.status == 'emerging' %}emerging{% else %}accelerating{% endif %}">
+            {% if t.status == 'emerging' %}new{% else %}{{ t.acceleration }}x{% endif %}
+        </span>
+        <span class="trend-count">{{ t.recent_count }} recent</span>
+    </a>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% if briefing and briefing.themes %}
+<div class="section-header">
+    latest briefing
+    <span class="section-meta">{{ briefing.period }} &middot; {{ briefing.document_count }} documents</span>
+</div>
+{% for theme in briefing.themes %}
+<div class="theme-card">
+    <div class="theme-header">
+        <span class="theme-label">{{ theme.theme }}</span>
+        <span class="theme-count">{{ theme.article_count }} articles</span>
+    </div>
+    <div class="theme-synthesis">{{ theme.synthesis }}</div>
+    {% if theme.key_insight %}
+    <div class="theme-insight">{{ theme.key_insight }}</div>
+    {% endif %}
+    {% if theme.articles %}
+    <div class="theme-articles">
+        {% for a in theme.articles[:5] %}
+        <a href="/doc/{{ a.id }}" class="theme-article-link">{{ a.title }}</a>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% if theme.connections %}
+    <div class="theme-connections">
+        <span class="connections-label">connects to:</span>
+        {% for c in theme.connections %}
+        <a href="/doc/{{ c.id }}" class="connection-link">{{ c.title }}</a>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endfor %}
+{% else %}
+<div class="section-header">briefing</div>
+<div class="message">
+    No briefing yet.
+    <form action="/generate-briefing" method="post" style="display:inline">
+        <button type="submit" class="btn" style="margin-left: 0.5rem;">generate briefing</button>
+    </form>
+</div>
+{% endif %}
+
+{% if top_keywords %}
+<div class="section-header">top topics</div>
+<div class="keyword-cloud">
+    {% for kw in top_keywords %}
+    <a href="/search?query={{ kw.keyword }}" class="keyword-tag">{{ kw.keyword }} ({{ kw.count }})</a>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="section-header">
+    recent
+    <span class="section-meta">latest additions</span>
+</div>
+<div class="doc-list">
+    {% for doc in documents %}
+    <div class="doc-card">
+        <div class="title"><a href="/doc/{{ doc.id }}">{{ doc.title }}</a></div>
+        <div class="meta">{{ doc.content_type }} &middot; {{ doc.date }}</div>
+        <div class="summary">{{ doc.summary[:200] }}{% if doc.summary|length > 200 %}...{% endif %}</div>
+        <div class="keywords">
+            {% for kw in doc.keywords[:5] %}
+            <span class="keyword-tag">{{ kw }}</span>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% if not documents %}
+<div class="message">No documents yet. <a href="/add" style="color: var(--accent)">Add your first URL</a>.</div>
+{% endif %}
+
+{% endblock %}

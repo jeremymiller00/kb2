@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}kb - ask{% endblock %}
+{% block content %}
+
+<div class="process-form">
+    <h2>? ask your knowledge base</h2>
+    <form action="/ask" method="get">
+        <div class="input-row">
+            <input type="text" name="question" value="{{ question }}" placeholder="What do you know about..." autofocus>
+            <button type="submit" class="btn">ask</button>
+        </div>
+    </form>
+</div>
+
+{% if answer %}
+<div class="answer-card">
+    <div class="section-header">answer</div>
+    <div class="answer-text">{{ answer.answer }}</div>
+
+    {% if answer.sources %}
+    <div class="sources-list">
+        <div class="sources-label">sources</div>
+        {% for src in answer.sources %}
+        <div class="source-item">
+            <span class="source-num">[{{ loop.index }}]</span>
+            <a href="/doc/{{ src.id }}" class="source-title">{{ src.title }}</a>
+            <span class="similarity">{{ "%.0f"|format(src.similarity * 100) }}%</span>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endif %}
+
+{% if revisit %}
+<div class="section-header" style="margin-top: 2rem;">worth revisiting</div>
+<p class="result-info">Older notes relevant to what you've been reading lately</p>
+<div class="doc-list">
+    {% for doc in revisit %}
+    <div class="doc-card">
+        <span class="similarity">{{ "%.0f"|format(doc.similarity * 100) }}%</span>
+        <div class="title"><a href="/doc/{{ doc.id }}">{{ doc.title }}</a></div>
+        <div class="meta">{{ doc.date }}</div>
+        <div class="keywords">
+            {% for kw in doc.keywords %}
+            <span class="keyword-tag">{{ kw }}</span>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% endblock %}
