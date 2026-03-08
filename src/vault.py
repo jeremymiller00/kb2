@@ -106,6 +106,7 @@ def load_json(path: Path) -> dict | None:
 
         required = {"url", "type", "timestamp", "summary", "keywords"}
         if not required.issubset(data.keys()):
+            logger.warning(f"Skipping incomplete JSON {path}")
             return None
 
         # Normalize: old format uses "embeddings", new uses "embedding"
@@ -114,6 +115,7 @@ def load_json(path: Path) -> dict | None:
 
         embedding = data.get("embedding")
         if not isinstance(embedding, list) or len(embedding) == 0:
+            logger.warning(f"Skipping JSON with invalid embedding {path}")
             return None
 
         # Derive title if missing

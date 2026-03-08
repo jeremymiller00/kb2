@@ -29,8 +29,8 @@ def _load_full_content(doc: dict) -> str:
         # Truncate very long content to keep LLM context manageable
         content = data["content"]
         words = content.split()
-        if len(words) > 2000:
-            content = " ".join(words[:2000]) + "..."
+        if len(words) > 10000:
+            content = " ".join(words[:10000]) + "..."
         return content
     return doc.get("summary", "")
 
