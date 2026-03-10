@@ -46,7 +46,7 @@ cp .env.example .env
 
 ```
 OPENAI_API_KEY=sk-...                  # Required
-DSV_KB_PATH=/path/to/obsidian/vault    # Path to your Obsidian vault
+DSV_KB_PATH=/path/to/obsidian/vault    # Path to your Obsidian vault, or knowledge base folder within your obsidian vault
 LLM_MODEL=gpt-4.1-mini                # Model for summaries/analysis
 EMBEDDING_MODEL=text-embedding-3-small # Model for embeddings
 API_PORT=8000                          # Server port (optional)
