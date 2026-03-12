@@ -9,10 +9,25 @@ Usage:
 """
 import argparse
 import hashlib
+import logging
 import sys
 import time
+from pathlib import Path
 
 from src.config import VAULT_PATH
+
+LOG_DIR = Path(__file__).parent.parent / "logs"
+LOG_DIR.mkdir(exist_ok=True)
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+    handlers=[
+        logging.StreamHandler(),
+        logging.FileHandler(LOG_DIR / "kb.log"),
+    ],
+)
 from src.storage import Database
 from src.vault import scan_json_files, load_json
 

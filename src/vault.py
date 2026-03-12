@@ -68,11 +68,24 @@ def save_obsidian_note(title: str, obsidian_markdown: str) -> str:
     return str(file_path)
 
 
+def _is_date_folder(name: str) -> bool:
+    """Check if a folder name matches the YYYY-MM-DD format."""
+    try:
+        datetime.strptime(name, "%Y-%m-%d")
+        return True
+    except ValueError:
+        return False
+
+
 def scan_json_files() -> list[Path]:
-    """Find all JSON data files in the vault for index rebuilding."""
+    """Find all JSON data files in date-named (YYYY-MM-DD) vault directories."""
     if not DATA_DIR.exists():
         return []
-    return sorted(DATA_DIR.rglob("*.json"), key=lambda p: p.stat().st_mtime, reverse=True)
+    results = []
+    for path in DATA_DIR.rglob("*.json"):
+        if _is_date_folder(path.parent.name):
+            results.append(path)
+    return sorted(results, key=lambda p: p.stat().st_mtime, reverse=True)
 
 
 def _title_from_url(url: str) -> str:
@@ -115,8 +128,20 @@ def load_json(path: Path) -> dict | None:
 
         embedding = data.get("embedding")
         if not isinstance(embedding, list) or len(embedding) == 0:
-            logger.warning(f"Skipping JSON with invalid embedding {path}")
-            return None
+            content = data.get("content", "")
+            if not content:
+                logger.warning(f"Skipping {path.name}: no embedding and no content to regenerate from")
+                return None
+            logger.info(f"Regenerating embedding for {path.name} (missing/malformed)")
+            from src.llm import generate_embedding
+            try:
+                data["embedding"] = generate_embedding(content)
+                # Save regenerated embedding back to the original JSON file
+                path.write_text(json.dumps(data, indent=2))
+                logger.info(f"Saved regenerated embedding to {path}")
+            except Exception as e:
+                logger.error(f"Failed to regenerate embedding for {path.name}: {e}")
+                return None
 
         # Derive title if missing
         if "title" not in data or not data["title"]:
