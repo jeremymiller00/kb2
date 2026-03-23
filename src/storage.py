@@ -124,12 +124,19 @@ class Database:
             where_clauses.append("(LOWER(d.title) LIKE ? OR LOWER(d.summary) LIKE ?)")
             params.extend([f"%{term}%", f"%{term}%"])
 
+        keyword_params = [f"%{query.lower()}%"]
+
         sql = f"""
-            SELECT d.* FROM documents d
-            WHERE {' AND '.join(where_clauses)}
+            SELECT DISTINCT d.* FROM documents d
+            WHERE ({' AND '.join(where_clauses)})
+               OR d.id IN (
+                   SELECT k.document_id FROM keywords k
+                   WHERE LOWER(k.keyword) LIKE ?
+               )
             ORDER BY d.timestamp DESC
             LIMIT ?
         """
+        params.extend(keyword_params)
         params.append(limit)
 
         with self._get_conn() as conn:

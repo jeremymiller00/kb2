@@ -98,6 +98,11 @@ The Obsidian vault (with JSON data files and embeddings) syncs via git. On a new
 
 To manually rebuild the index:
 ```bash
+./start.sh --rebuild
+```
+
+Or
+```bash
 python -m scripts.rebuild_index          # incremental
 python -m scripts.rebuild_index --clear  # full rebuild
 ```

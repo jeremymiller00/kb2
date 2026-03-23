@@ -284,8 +284,8 @@ def detect_trends(db: Database, recent_days: int = 14,
             (baseline_cutoff, recent_cutoff)
         ).fetchall()
 
-    recent = {r["keyword"]: r["count"] for r in recent_rows}
-    baseline = {r["keyword"]: r["count"] for r in baseline_rows}
+    recent = {r["keyword"].lower(): r["count"] for r in recent_rows}
+    baseline = {r["keyword"].lower(): r["count"] for r in baseline_rows}
     baseline_days_actual = max(baseline_days - recent_days, 1)
 
     trends = []
