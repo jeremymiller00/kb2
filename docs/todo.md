@@ -1,6 +1,7 @@
 # In Progress
 
 # To Do
+- build QA over lenny's transcripts https://github.com/jeremymiller00/lennys-podcast-transcripts/tree/main
 - now it is only operating over knowledge-base folder; do i want this?
 - read code to thoroughly understand
 - many entries don't have good titles, youtube, arxiv, etc; some have html at the end
