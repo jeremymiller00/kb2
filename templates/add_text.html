@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}kb - add text{% endblock %}
+{% block content %}
+
+<div class="process-form">
+    <h2>+ add raw text</h2>
+    <p class="form-help">Paste content that can't be scraped. It's processed the same as a URL entry — summary, keywords, embedding, vault save.</p>
+    <form action="/add-text" method="post" class="stacked-form">
+        <label>
+            <span>url <em>(required — used as the unique identifier)</em></span>
+            <input type="url" name="url" placeholder="https://..." required value="{{ form.url }}" autofocus>
+        </label>
+        <div class="form-row">
+            <label>
+                <span>title <em>(optional)</em></span>
+                <input type="text" name="title" placeholder="auto-derived from url" value="{{ form.title }}">
+            </label>
+            <label>
+                <span>content type <em>(optional)</em></span>
+                <input type="text" name="content_type" placeholder="auto-detected" value="{{ form.content_type }}">
+            </label>
+        </div>
+        <label>
+            <span>content <em>(required)</em></span>
+            <textarea name="content" rows="20" placeholder="paste article, transcript, notes..." required>{{ form.content }}</textarea>
+        </label>
+        <div class="form-actions">
+            <a href="/add" class="link-muted">← add by url instead</a>
+            <button type="submit" class="btn">process</button>
+        </div>
+    </form>
+</div>
+
+{% if result %}
+<div class="message success">Processed: {{ result.title }}</div>
+<div class="doc-card">
+    <div class="title"><a href="/doc/{{ result.doc_id }}">{{ result.title }}</a></div>
+    <div class="meta">{{ result.content_type }}</div>
+    <div class="summary">{{ result.summary }}</div>
+    <div class="keywords">
+        {% for kw in result.keywords %}
+        <span class="keyword-tag">{{ kw }}</span>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% if error %}
+<div class="message error">{{ error }}</div>
+{% endif %}
+
+{% endblock %}

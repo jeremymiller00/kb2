@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException, Query
 
-from src.models import ProcessRequest, ProcessResult, Document, SearchResult
+from src.models import ProcessRequest, ProcessTextRequest, ProcessResult, Document, SearchResult
 from src.storage import Database
-from src.pipeline import process_url
+from src.pipeline import process_url, process_text
 from src.llm import generate_embedding
 
 router = APIRouter()
@@ -20,6 +20,19 @@ def process_content(req: ProcessRequest):
     if existing:
         raise HTTPException(status_code=409, detail=f"URL already processed (id={existing['id']})")
     return process_url(req.url, db=db, save=req.save)
+
+
+@router.post("/process-text", response_model=ProcessResult)
+def process_raw_text(req: ProcessTextRequest):
+    """Process user-provided text as if it had been scraped from the given url."""
+    db = get_db()
+    existing = db.get_by_url(req.url)
+    if existing:
+        raise HTTPException(status_code=409, detail=f"URL already processed (id={existing['id']})")
+    return process_text(
+        url=req.url, content=req.content, db=db,
+        title=req.title, content_type=req.content_type, save=req.save,
+    )
 
 
 @router.get("/documents", response_model=list[Document])
