@@ -7,6 +7,14 @@ class ProcessRequest(BaseModel):
     save: bool = True
 
 
+class ProcessTextRequest(BaseModel):
+    url: str
+    content: str
+    title: Optional[str] = None
+    content_type: Optional[str] = None
+    save: bool = True
+
+
 class ProcessResult(BaseModel):
     url: str
     title: str

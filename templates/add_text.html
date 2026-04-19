@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}kb - add text{% endblock %}
+{% block content %}
+
+<div class="process-form">
+    <h2>+ add raw text</h2>
+    <p class="result-info">Paste content that can't be scraped. Processed the same as a URL entry.</p>
+    <form action="/add-text" method="post">
+        <div class="input-row">
+            <input type="url" name="url" placeholder="https://..." required value="{{ form.url }}" autofocus>
+        </div>
+        <div class="input-row">
+            <input type="text" name="title" placeholder="title (optional — auto-derived from url)" value="{{ form.title }}">
+            <input type="text" name="content_type" placeholder="content type (optional)" value="{{ form.content_type }}">
+        </div>
+        <div class="input-row">
+            <textarea name="content" rows="16" placeholder="paste article, transcript, notes..." required>{{ form.content }}</textarea>
+        </div>
+        <div class="input-row form-footer">
+            <a href="/add" class="link-muted">← add by url instead</a>
+            <button type="submit" class="btn">process</button>
+        </div>
+    </form>
+</div>
+
+{% if result %}
+<div class="message success">Processed: {{ result.title }}</div>
+<div class="doc-card">
+    <div class="title"><a href="/doc/{{ result.doc_id }}">{{ result.title }}</a></div>
+    <div class="meta">{{ result.content_type }}</div>
+    <div class="summary">{{ result.summary }}</div>
+    <div class="keywords">
+        {% for kw in result.keywords %}
+        <span class="keyword-tag">{{ kw }}</span>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% if error %}
+<div class="message error">{{ error }}</div>
+{% endif %}
+
+{% endblock %}

@@ -5,7 +5,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
 from src.storage import Database
-from src.pipeline import process_url
+from src.pipeline import process_url, process_text
 from src.llm import generate_embedding
 from src.insights import generate_briefing, save_briefing, detect_trends
 from src.research import ask as research_ask, topic_briefing, revisit_suggestions
@@ -119,6 +119,55 @@ def add_url(request: Request, url: str = Form(...)):
         ctx["error"] = str(e)
 
     return templates.TemplateResponse("add.html", ctx)
+
+
+@router.get("/add-text", response_class=HTMLResponse)
+def add_text_page(request: Request):
+    ctx = _base_context(request, "add")
+    ctx["result"] = None
+    ctx["error"] = None
+    ctx["form"] = {"url": "", "title": "", "content_type": "", "content": ""}
+    return templates.TemplateResponse("add_text.html", ctx)
+
+
+@router.post("/add-text", response_class=HTMLResponse)
+def add_text(
+    request: Request,
+    url: str = Form(...),
+    content: str = Form(...),
+    title: str = Form(""),
+    content_type: str = Form(""),
+):
+    db = Database()
+    ctx = _base_context(request, "add")
+    ctx["result"] = None
+    ctx["error"] = None
+    ctx["form"] = {"url": url, "title": title, "content_type": content_type, "content": content}
+
+    existing = db.get_by_url(url)
+    if existing:
+        ctx["error"] = f"URL already processed (id={existing['id']})"
+        return templates.TemplateResponse("add_text.html", ctx)
+
+    try:
+        result = process_text(
+            url=url, content=content, db=db,
+            title=title or None, content_type=content_type or None,
+            save=True,
+        )
+        doc = db.get_by_url(result.url)
+        ctx["result"] = {
+            "title": result.title,
+            "content_type": result.content_type,
+            "summary": result.summary,
+            "keywords": result.keywords,
+            "doc_id": doc["id"] if doc else None,
+        }
+        ctx["form"] = {"url": "", "title": "", "content_type": "", "content": ""}
+    except Exception as e:
+        ctx["error"] = str(e)
+
+    return templates.TemplateResponse("add_text.html", ctx)
 
 
 @router.get("/doc/{doc_id}", response_class=HTMLResponse)
