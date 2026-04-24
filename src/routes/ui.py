@@ -9,8 +9,6 @@ from src.pipeline import process_url, process_text
 from src.llm import generate_embedding
 from src.insights import generate_briefing, save_briefing, detect_trends
 from src.research import ask as research_ask, topic_briefing, revisit_suggestions
-from src.lenny import ask_lenny
-
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
@@ -200,22 +198,6 @@ def ask_page(request: Request, question: str = "", full_content: str = ""):
         ctx["answer"] = research_ask(question, db, use_full_content=bool(full_content))
 
     return templates.TemplateResponse("ask.html", ctx)
-
-
-@router.get("/lenny", response_class=HTMLResponse)
-def lenny_page(request: Request, question: str = ""):
-    ctx = _base_context(request, "lenny")
-    ctx["question"] = question
-    ctx["result"] = None
-    ctx["error"] = None
-
-    if question:
-        try:
-            ctx["result"] = ask_lenny(question)
-        except Exception as e:
-            ctx["error"] = str(e)
-
-    return templates.TemplateResponse("lenny.html", ctx)
 
 
 @router.get("/topic", response_class=HTMLResponse)
