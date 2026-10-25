@@ -31,7 +31,7 @@ def _chat(system: str, user: str) -> str:
             {"role": "system", "content": system},
             {"role": "user", "content": user},
         ],
-        max_tokens=MAX_OUTPUT_TOKENS,
+        max_completion_tokens=MAX_OUTPUT_TOKENS,
     )
     return response.choices[0].message.content.strip()
 
